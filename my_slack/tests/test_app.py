@@ -1,5 +1,5 @@
 from unittest.mock import patch, MagicMock
-import src.app
+from  src.app import send_slack_message, get_list_of_channels, get_list_of_users, main
 
 @patch("src.app.requests.post")
 def test_send_slack_message(mock_post):
@@ -8,7 +8,7 @@ def test_send_slack_message(mock_post):
     mock_response.text = "ok"
     mock_post.return_value = mock_response
 
-    src.app.send_slack_message("Hello")
+    send_slack_message("Hello")
     mock_post.assert_called_once()
     args, kwargs = mock_post.call_args
     assert kwargs["json"]["text"] == "Hello"
@@ -23,7 +23,7 @@ def test_get_list_of_users(mock_client_class):
         ]
     }
     mock_client_class.return_value = mock_client
-    src.app.get_list_of_users(mock_client)
+    get_list_of_users(mock_client)
     mock_client.users_list.assert_called_once()
 
 @patch("src.app.WebClient")
@@ -36,7 +36,7 @@ def test_get_list_of_channels(mock_client_class):
         ]
     }
     mock_client_class.return_value = mock_client
-    src.app.get_list_of_channels(mock_client)
+    get_list_of_channels(mock_client)
     mock_client.conversations_list.assert_called_once()
 
 @patch("src.app.send_slack_message")
@@ -45,5 +45,5 @@ def test_main_with_message(mock_client_class, mock_send):
     mock_client = MagicMock()
     mock_client_class.return_value = mock_client
     test_args = ["-m", "Hello from test"]
-    src.app.main(test_args)
+    main(test_args)
     mock_send.assert_called_once_with("Hello from test")
