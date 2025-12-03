@@ -30,4 +30,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest slack_task
+          pytest slack_task/tests
