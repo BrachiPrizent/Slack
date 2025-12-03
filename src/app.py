@@ -1,4 +1,5 @@
 import getopt
+import logging
 import os
 import requests
 import sys
@@ -6,6 +7,7 @@ from dotenv import load_dotenv
 from slack_sdk import WebClient
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 def main(argv):
     message = ' '
@@ -13,14 +15,14 @@ def main(argv):
         opts, args = getopt.getopt(argv, "hm:", ["message="])
 
     except getopt.GetoptError:
-        print('slack.py -m <message>')
+        logger.info('slack.py -m <message>')
         sys.exit(2)
 
     if len(opts) == 0:
         message = 'HELLO, WORLD!'
     for opt, arg in opts:
         if opt == '-h':
-            print('slack.py -m <message>')
+            logger.info('slack.py -m <message>')
             sys.exit()
         elif opt in ("-m", "--message"):
             message = arg
@@ -43,12 +45,12 @@ def get_list_of_users(client):
                     "id": member["id"],
                     "email": member["profile"].get("email")
                 })
-        print("Connected User List:")
+        logger.info("Connected User List:")
         for user in user_list:
-            print(f"- Name: {user['name']}, ID: {user['id']}, Email: {user['email']}")
+            logger.info("- Name: %s, ID: %s, Email: %s", {user['name']}, {user['id']}, {user['email']})
 
     except Exception as e:
-        print(f"Error fetching users: {e}")
+        logger.error("Error fetching users: %s", {e})
 
 def get_list_of_channels(client):
     try:
@@ -60,19 +62,25 @@ def get_list_of_channels(client):
                 "name": channel["name"],
                 "id": channel["id"]
             })
-        print("\nConnected Channel List:")
+        logger.info("\nConnected Channel List:")
         for channel in channel_list:
-            print(f"- Name: {channel['name']}, ID: {channel['id']}")
+            logger.info("- Name: %s, ID: %s", {channel['name']}, {channel['id']})
 
     except Exception as e:
-        print(f"Error fetching channels: {e}")
+        logger.error("Error fetching channels: %s", {e})
 
 def send_slack_message(message):
     payload = {"text": message}
     SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
     response = requests.post(SLACK_WEBHOOK_URL, json = payload, verify=False)
-    print("Status:", response.status_code)
-    print("Response:", response.text)
+    logger.info("Status: %s", response.status_code)
+    logger.info("Response: %s", response.text)
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        filename='app.log',
+        filemode='a'
+    )
     main(sys.argv[1:])
