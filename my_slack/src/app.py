@@ -9,9 +9,9 @@ from src.connecting_to_slack import get_list_of_channels, get_list_of_users, sen
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-def main(argv):
+def get_message(argv):
     message = ' '
-    try: 
+    try:
         opts, args = getopt.getopt(argv, "hm:", ["message="])
 
     except getopt.GetoptError:
@@ -26,7 +26,9 @@ def main(argv):
             sys.exit()
         elif opt in ("-m", "--message"):
             message = arg
+            connectToSlack(message)
 
+def connectToSlack(message):
     send_slack_message(message)
     slack_token = os.getenv("SLACK_BOT_TOKEN")
     client = WebClient(token=slack_token)
@@ -40,4 +42,4 @@ if __name__ == "__main__":
         filename='app.log',
         filemode='a'
     )
-    main(sys.argv[1:])
+    get_message(sys.argv[1:])
