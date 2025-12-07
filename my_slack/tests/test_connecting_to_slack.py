@@ -13,7 +13,7 @@ def test_send_slack_message(mock_post):
     args, kwargs = mock_post.call_args
     assert kwargs["json"]["text"] == "Hello"
 
-@patch("src.app.WebClient")
+@patch("src.connecting_to_slack.WebClient")
 def test_get_list_of_users(mock_client_class):
     mock_client = MagicMock()
     mock_client.users_list.return_value = {
@@ -26,7 +26,7 @@ def test_get_list_of_users(mock_client_class):
     get_list_of_users(mock_client)
     mock_client.users_list.assert_called_once()
 
-@patch("src.app.WebClient")
+@patch("src.connecting_to_slack.WebClient")
 def test_get_list_of_channels(mock_client_class):
     mock_client = MagicMock()
     mock_client.conversations_list.return_value = {
