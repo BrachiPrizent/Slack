@@ -4,7 +4,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from slack_sdk import WebClient
-from connecting_to_slack import get_list_of_channels, get_list_of_users, send_slack_message
+from src.connecting_to_slack import get_list_of_channels, get_list_of_users, send_slack_message
 
 load_dotenv()
 logger = logging.getLogger(__name__)
