@@ -14,6 +14,31 @@ def connectToSlack(message):
     get_list_of_channels(client)
     get_list_of_users(client)
 
+
+def send_slack_message(message):
+    payload = {"text": message}
+    SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
+    response = requests.post(SLACK_WEBHOOK_URL, json = payload, verify=False)
+    logger.info("Status: %s", response.status_code)
+    logger.info("Response: %s", response.text)
+
+def get_list_of_channels(client):
+    try:
+        response = client.conversations_list(types="public_channel")
+        channels = response["channels"]
+        channels_list = []
+        for channel in channels:
+            channels_list.append({
+                "name": channel["name"],
+                "id": channel["id"]
+            })
+        logger.info("\nConnected Channel List:")
+        for channel in channels_list:
+            logger.info("- Name: %s, ID: %s", channel['name'], channel['id'])
+
+    except Exception as e:
+        logger.error("Error fetching channels: %s", {e})
+
 def get_list_of_users(client):
     try:
         response = client.users_list()
@@ -32,27 +57,3 @@ def get_list_of_users(client):
 
     except Exception as e:
         logger.error("Error fetching users: %s", {e})
-
-def get_list_of_channels(client):
-    try:
-        response = client.conversations_list(types="public_channel")
-        channels = response["channels"]
-        channel_list = []
-        for channel in channels:
-            channel_list.append({
-                "name": channel["name"],
-                "id": channel["id"]
-            })
-        logger.info("\nConnected Channel List:")
-        for channel in channel_list:
-            logger.info("- Name: %s, ID: %s", channel['name'], channel['id'])
-
-    except Exception as e:
-        logger.error("Error fetching channels: %s", {e})
-
-def send_slack_message(message):
-    payload = {"text": message}
-    SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
-    response = requests.post(SLACK_WEBHOOK_URL, json = payload, verify=False)
-    logger.info("Status: %s", response.status_code)
-    logger.info("Response: %s", response.text)
