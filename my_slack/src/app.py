@@ -1,12 +1,9 @@
 import getopt
 import logging
-import os
 import sys
-from dotenv import load_dotenv
-from slack_sdk import WebClient
-from src.connecting_to_slack import get_list_of_channels, get_list_of_users, send_slack_message
 
-load_dotenv()
+from src.connecting_to_slack import connectToSlack
+
 logger = logging.getLogger(__name__)
 
 def get_message(argv):
@@ -27,13 +24,6 @@ def get_message(argv):
         elif opt in ("-m", "--message"):
             message = arg
             connectToSlack(message)
-
-def connectToSlack(message):
-    send_slack_message(message)
-    slack_token = os.getenv("SLACK_BOT_TOKEN")
-    client = WebClient(token=slack_token)
-    get_list_of_channels(client)
-    get_list_of_users(client)
 
 if __name__ == "__main__":
     logging.basicConfig(
