@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
-from  src.app import send_slack_message, get_list_of_channels, get_list_of_users, main
+from  src.connecting_to_slack import send_slack_message, get_list_of_channels, get_list_of_users
 
-@patch("src.app.requests.post")
+@patch("src.connecting_to_slack.requests.post")
 def test_send_slack_message(mock_post):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -38,12 +38,3 @@ def test_get_list_of_channels(mock_client_class):
     mock_client_class.return_value = mock_client
     get_list_of_channels(mock_client)
     mock_client.conversations_list.assert_called_once()
-
-@patch("src.app.send_slack_message")
-@patch("src.app.WebClient")
-def test_main_with_message(mock_client_class, mock_send):
-    mock_client = MagicMock()
-    mock_client_class.return_value = mock_client
-    test_args = ["-m", "Hello from test"]
-    main(test_args)
-    mock_send.assert_called_once_with("Hello from test")
